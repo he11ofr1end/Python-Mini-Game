@@ -116,35 +116,22 @@ class SpriteManager:
             self.sprites['player']['down'] = walk_frames[:4]
 
     def load_zombie_sprites(self):
-        zombie_path = 'sprites/Zombie/Zombie Man'
-        if not os.path.exists(zombie_path):
+        img_path = 'sprites/enemy.png'
+        if not os.path.exists(img_path):
             return
 
-        walk_sheet = None
-        attack_sheet = None
-        idle_sheet = None
-
-        if os.path.exists(f'{zombie_path}/Walk.png'):
-            walk_sheet = pg.image.load(f'{zombie_path}/Walk.png').convert_alpha()
-        if os.path.exists(f'{zombie_path}/Attack_1.png'):
-            attack_sheet = pg.image.load(f'{zombie_path}/Attack_1.png').convert_alpha()
-        if os.path.exists(f'{zombie_path}/Idle.png'):
-            idle_sheet = pg.image.load(f'{zombie_path}/Idle.png').convert_alpha()
-
-        walk_frames = self.extract_frames(walk_sheet, 8) if walk_sheet else []
-        attack_frames = self.extract_frames(attack_sheet, 5) if attack_sheet else []
-        idle_frames = self.extract_frames(idle_sheet, 4) if idle_sheet else []
+        img = pg.image.load(img_path).convert_alpha()
+        img = pg.transform.scale(img, (85, 85))
+        img_flipped = pg.transform.flip(img, True, False)
 
         self.sprites['enemy'] = {}
+        self.sprites['enemy']['right'] = [img, img, img, img]
+        self.sprites['enemy']['left'] = [img_flipped, img_flipped, img_flipped, img_flipped]
+        self.sprites['enemy']['up'] = [img, img, img, img]
+        self.sprites['enemy']['down'] = [img, img, img, img]
 
-        if walk_frames:
-            self.sprites['enemy']['right'] = walk_frames[:4]
-            self.sprites['enemy']['left'] = [pg.transform.flip(f, True, False) for f in walk_frames[:4]]
-            self.sprites['enemy']['up'] = walk_frames[:4]
-            self.sprites['enemy']['down'] = walk_frames[:4]
-
-        self.zombie_frames['attack'] = attack_frames
-        self.zombie_frames['idle'] = idle_frames
+        self.zombie_frames['attack'] = []
+        self.zombie_frames['idle'] = []
 
     def extract_frames(self, sprite_sheet, num_frames):
         if sprite_sheet is None:
