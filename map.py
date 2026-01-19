@@ -23,6 +23,14 @@ class Map:
                 if value:
                     self.world_map[(x, y)] = value
 
+    def get_free_positions(self):
+        free = []
+        for y, row in enumerate(self.mini_map):
+            for x, value in enumerate(row):
+                if not value:
+                    free.append((x, y))
+        return free
+
     def load_textures(self):
         import os
         tileset_path = 'map/0x72_DungeonTilesetII_v1.7'
