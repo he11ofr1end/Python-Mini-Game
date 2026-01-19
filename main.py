@@ -1,7 +1,7 @@
 import sys
 import pygame as pg
 import os
-
+import random
 from map import Map
 from player import Player
 from camera import Camera
@@ -20,11 +20,20 @@ class Game:
         self.delta_time = 1
         pg.mouse.set_visible(False)
         self.sprite_manager = SpriteManager()
+        self.init_music()
         self.game_state = 'playing'
         self.slow_motion = False
         self.slow_motion_end_time = 0
         self.slow_motion_factor = 0.3
         self.new_game()
+
+    def init_music(self):
+        pg.mixer.init()
+        music_path = 'sounds/background.mp3'
+        if os.path.exists(music_path):
+            pg.mixer.music.load(music_path)
+            pg.mixer.music.set_volume(0.6)
+            pg.mixer.music.play(-1)
 
     def new_game(self):
         self.map = Map(self)
@@ -32,18 +41,10 @@ class Game:
         self.camera = Camera(self)
         self.weapon = Weapon(self)
         self.ui_renderer = UIRenderer(self)
-        self.enemies = [
-            Enemy(self, 5, 3), Enemy(self, 8, 3), Enemy(self, 11, 3), Enemy(self, 14, 3),
-            Enemy(self, 17, 3), Enemy(self, 20, 3), Enemy(self, 23, 3), Enemy(self, 26, 3),
-            Enemy(self, 5, 6), Enemy(self, 10, 6), Enemy(self, 15, 6), Enemy(self, 20, 6),
-            Enemy(self, 25, 6), Enemy(self, 30, 6), Enemy(self, 35, 6), Enemy(self, 5, 9),
-            Enemy(self, 10, 9), Enemy(self, 15, 9), Enemy(self, 20, 9), Enemy(self, 25, 9),
-            Enemy(self, 30, 9), Enemy(self, 35, 9), Enemy(self, 5, 12), Enemy(self, 10, 12),
-            Enemy(self, 15, 12), Enemy(self, 20, 12), Enemy(self, 25, 12), Enemy(self, 30, 12),
-            Enemy(self, 5, 15), Enemy(self, 10, 15), Enemy(self, 15, 15), Enemy(self, 20, 15),
-            Enemy(self, 25, 15), Enemy(self, 30, 15), Enemy(self, 5, 18), Enemy(self, 10, 18),
-            Enemy(self, 15, 18), Enemy(self, 20, 18), Enemy(self, 25, 18), Enemy(self, 30, 18),
-        ]
+        num_enemies = random.randint(10, 25)
+        free_positions = self.map.get_free_positions()
+        random.shuffle(free_positions)
+        self.enemies = [Enemy(self, pos[0], pos[1]) for pos in free_positions[:num_enemies]]
         self.bullets = []
         self.score = 0
         self.game_state = 'playing'
